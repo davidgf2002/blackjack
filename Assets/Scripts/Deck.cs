@@ -103,7 +103,44 @@ public class Deck : MonoBehaviour
          * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
          * - Probabilidad de que el jugador obtenga más de 21 si pide una carta (X)  
          */
+        //------------------
+        //Mayor que 21
+        int sumatorio = sumatorioPlayer;
 
+        if ((sumatorio > 11) && (sumatorio < 22))
+        {
+            int resPlayer = 21 - sumatorio;
+            int res = 13 - resPlayer;
+            float div = (float)((float)res / 13.0) * 100;
+            probMessage.text = div.ToString("0.00");
+        }
+        else
+        {
+            probMessage.text = "0";
+        }
+
+        //Entre 17 y 21
+        if ((sumatorio < 7) || (sumatorio > 20))
+        {
+            probMessage17.text = "0";
+        }
+        if ((sumatorio > 6) && (sumatorio < 12))
+        {
+            float num = (float)(sumatorio - 3.0);
+            float res = (num / 13) * 100;
+            probMessage17.text = res.ToString("0.00");
+        }
+        if ((sumatorio >= 12) && (sumatorio < 17))
+        {
+            float num = (float)((5.0 / 13.0) * 100.0);
+            probMessage17.text = num.ToString("0.00");
+        }
+        if ((sumatorio >= 17) && (sumatorio < 21))
+        {
+            float num = (float)(21.0 - sumatorio);
+            float res = (float)((num / 13.0) * 100.0);
+            probMessage17.text = res.ToString("0.00");
+        }
     }
 
     void PushDealer()
