@@ -69,6 +69,18 @@ public class Deck : MonoBehaviour
          * El método Random.Range(0,n), devuelve un valor entre 0 y n-1
          * Si lo necesitas, puedes definir nuevos arrays.
          */
+
+        for (int i = faces.Length - 1; i >= 0; i--)
+        {
+            int j = UnityEngine.Random.Range(0, 52);
+            Sprite face = faces[i];
+            faces[i] = faces[j];
+            faces[j] = face;
+
+            int value = values[i];
+            values[i] = values[j];
+            values[j] = value;
+        }
     }
 
     void StartGame()
