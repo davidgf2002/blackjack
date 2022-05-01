@@ -88,10 +88,39 @@ public class Deck : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             PushPlayer();
+
+        }
+        for (int i = 0; i < 2; i++)
+        {
             PushDealer();
-            /*TODO:
-             * Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje
-             */
+        }
+
+        //Sumatorio de los valores
+        sumatorioPlayer = values[0] + values[1];
+        sumatorioDealer = values[2] + values[3];
+        CalculateProbabilities();
+        //Mostrar por pantalla en valor del jugador
+        numCartas.text = sumatorioPlayer.ToString();
+
+        //Si alguno de los dos obtiene Blackjack, termina el juego y mostramos mensaje 
+        if (sumatorioPlayer == 21)
+        {
+            //Se acaba el juego y se muestra la pantalla de victoria
+            GameOver("Victoria");
+
+            //Se ocultan los botones
+            EstadoBotones(false);
+        }
+        else if (sumatorioDealer == 21)
+        {
+            //Se muestra la carta del dealer que esta escondida
+            dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+
+            //Se acaba el juego y se muestra la pantalla de derrota
+            GameOver("Derrota");
+
+            //Se ocultan los botones
+            EstadoBotones(false);
         }
     }
 
@@ -159,16 +188,34 @@ public class Deck : MonoBehaviour
 
     public void Hit()
     {
-        /*TODO: 
-  * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
-  */
+        //Se muestra la carta oculta del dealer
+        dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
 
         //Repartimos carta al jugador
         PushPlayer();
 
-        /*TODO:
-         * Comprobamos si el jugador ya ha perdido y mostramos mensaje
-         */
+        //Calculamos los valores y lo mostramos por pantalla
+        sumatorioPlayer = sumatorioPlayer + values[playerIndex - 1];
+        numCartas.text = sumatorioPlayer.ToString();
+        numCartasDealer.text = sumatorioDealer.ToString();
+
+        CalculateProbabilities();
+
+        //Comprobamos si el jugador ya ha perdido y mostramos mensaje
+        if (sumatorioPlayer > 21)
+        {
+            //Se acaba el juego y se muestra la pantalla de derrota
+            GameOver("Derrota");
+
+            //Se muestra el valor de Dealer
+            numCartasDealer.text = sumatorioDealer.ToString();
+
+            //Se ocultan los botones
+            EstadoBotones(false);
+
+            //Pierdes el dinero de la apuesta
+            Economia(false, apuesta);
+        }
     }
 
     public void Stand()
@@ -194,5 +241,32 @@ public class Deck : MonoBehaviour
         playerIndex = 0;
         ShuffleCards();
         StartGame();
+    }
+
+    private void EstadoBotones(bool estado)
+    {
+        //Muestran u ocultan los botones
+        hitButton.interactable = estado;
+        stickButton.interactable = estado;
+    }
+
+    private void GameOver(string text)
+    {
+        finalMessage.text = text;
+        letrero.SetActive(true);
+    }
+
+    private void Economia(bool estado, int dinero)
+    {
+        if (estado)
+        {
+            money = money + (dinero * 2);
+            moneyText.text = money.ToString();
+        }
+        else
+        {
+            money = money - apuesta;
+            moneyText.text = money.ToString();
+        }
     }
 }
