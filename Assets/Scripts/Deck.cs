@@ -35,6 +35,19 @@ public class Deck : MonoBehaviour
 
     private void Start()
     {
+        //Mostrar dinero
+        moneyText.text = money.ToString();
+
+        //Ajustar el valor máximo del slider con el dinero
+        slider.maxValue = money;
+
+        //Slider obtener valor
+        slider.onValueChanged.AddListener((v) =>
+        {
+            apuesta = Convert.ToInt32(v);
+            sliderText.text = v.ToString("0");
+        });
+
         ShuffleCards();
         StartGame();
     }
@@ -220,25 +233,87 @@ public class Deck : MonoBehaviour
 
     public void Stand()
     {
-        /*TODO: 
-      * Si estamos en la mano inicial, debemos voltear la primera carta del dealer.
-      */
-
         /*TODO:
          * Repartimos cartas al dealer si tiene 16 puntos o menos
          * El dealer se planta al obtener 17 puntos o más
          * Mostramos el mensaje del que ha ganado
          */
+
+        //Se muestra la carta oculta del dealer
+        dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
+
+        //Se ocultan los botones
+        EstadoBotones(false);
+
+        numCartasDealer.text = sumatorioDealer.ToString();
+
+        while (sumatorioDealer < 17)
+        {
+            PushDealer();
+            sumatorioDealer += values[playerIndex - 1];
+            numCartasDealer.text = sumatorioDealer.ToString();
+
+
+        }
+
+        if ((sumatorioDealer == 21) && (sumatorioPlayer == 21) || (sumatorioDealer == sumatorioPlayer) && (sumatorioDealer < 22) && (sumatorioPlayer < 22))
+        {
+            //Se acaba el juego y se muestra la pantalla de Empate
+            GameOver("Empate");
+        }
+        if (sumatorioPlayer == 21)
+        {
+            //Se acaba el juego y se muestra la pantalla de Victoria
+            GameOver("Victoria");
+
+            //Ganas el dinero de la apuesta por 2
+            Economia(true, apuesta);
+        }
+        if ((sumatorioDealer > sumatorioPlayer) && (sumatorioDealer < 22))
+        {
+            //Se acaba el juego y se muestra la pantalla de derrota
+            GameOver("Derrota");
+
+            //Pierdes el dinero de la apuesta
+            Economia(false, apuesta);
+        }
+        if ((sumatorioPlayer > sumatorioDealer) && (sumatorioPlayer < 22) || (sumatorioPlayer < sumatorioDealer) && (sumatorioDealer > 21))
+        {
+            //Se acaba el juego y se muestra la pantalla de Victoria
+            GameOver("Victoria");
+
+            //Ganas el dinero de la apuesta por 2
+            Economia(true, apuesta);
+        }
+        if ((sumatorioPlayer > 21) && (sumatorioDealer > 21))
+        {
+            //Se acaba el juego y se muestra la pantalla de derrota
+            GameOver("Ambos Pierden");
+
+            //Pierdes el dinero de la apuesta
+            Economia(false, apuesta);
+        }
     }
 
     public void PlayAgain()
     {
-        hitButton.interactable = true;
-        stickButton.interactable = true;
+        //Se muestran los botones
+        EstadoBotones(true);
+
         finalMessage.text = "";
+        letrero.SetActive(false);
+
+        //Se borran las carta
         player.GetComponent<CardHand>().Clear();
         dealer.GetComponent<CardHand>().Clear();
+
+        //Se reinician los contadores
         playerIndex = 0;
+        sumatorioPlayer = 0;
+
+        //Comienza el juego
+        slider.maxValue = money;
+        numCartasDealer.text = "0";
         ShuffleCards();
         StartGame();
     }
