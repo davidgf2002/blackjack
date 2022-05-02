@@ -107,7 +107,7 @@ public class Deck : MonoBehaviour
         {
             PushDealer();
         }
-
+        slider.enabled = true;
         //Sumatorio de los valores
         sumatorioPlayer = values[0] + values[1];
         sumatorioDealer = values[2] + values[3];
@@ -145,6 +145,7 @@ public class Deck : MonoBehaviour
          * - Probabilidad de que el jugador obtenga entre un 17 y un 21 si pide una carta
          * - Probabilidad de que el jugador obtenga más de 21 si pide una carta (X)  
          */
+
         //------------------
         //Mayor que 21
         int sumatorio = sumatorioPlayer;
@@ -229,21 +230,23 @@ public class Deck : MonoBehaviour
             //Pierdes el dinero de la apuesta
             Economia(false, apuesta);
         }
+
+        slider.enabled = false;
     }
 
     public void Stand()
     {
-        /*TODO:
-         * Repartimos cartas al dealer si tiene 16 puntos o menos
-         * El dealer se planta al obtener 17 puntos o más
-         * Mostramos el mensaje del que ha ganado
-         */
-
         //Se muestra la carta oculta del dealer
         dealer.GetComponent<CardHand>().cards[0].GetComponent<CardModel>().ToggleFace(true);
 
         //Se ocultan los botones
         EstadoBotones(false);
+
+        /*TODO:
+         * Repartimos cartas al dealer si tiene 16 puntos o menos
+         * El dealer se planta al obtener 17 puntos o más
+         * Mostramos el mensaje del que ha ganado
+         */
 
         numCartasDealer.text = sumatorioDealer.ToString();
 
@@ -293,6 +296,8 @@ public class Deck : MonoBehaviour
             //Pierdes el dinero de la apuesta
             Economia(false, apuesta);
         }
+
+        slider.enabled = false;
     }
 
     public void PlayAgain()
@@ -313,7 +318,7 @@ public class Deck : MonoBehaviour
 
         //Comienza el juego
         slider.maxValue = money;
-        numCartasDealer.text = "0";
+        numCartasDealer.text = "";
         ShuffleCards();
         StartGame();
     }
